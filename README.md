@@ -10,6 +10,7 @@ This project is in early stages of construction; run instructions will be added 
 
 ### Todo
 - Refactor into proper NodeJS web service strcture (integrate webpack)
+- Configuration strings (database and webserver info) extracted into config file
 - More widgets doing more interesting things with the data
 - Add link to sample dataset
 - Lots of refactoring and code cleanup
