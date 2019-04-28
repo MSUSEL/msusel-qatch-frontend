@@ -23,6 +23,7 @@ function makeGraphs(error, apiData) {
 
     dataSet.forEach(function (d) {
         d.analysis_time = dateParse(d.analysis_time);
+        console.log(d);
         d.maxMaintainabilityInfluence = d.properties.properties[maxCharWeightIndex(d, 0)].name;
         d.maxReliabilityInfluence = d.properties.properties[maxCharWeightIndex(d, 1)].name;
         d.maxSecurityInfluence = d.properties.properties[maxCharWeightIndex(d, 2)].name;
@@ -72,7 +73,7 @@ function makeGraphs(error, apiData) {
     var maxDate = timeScanned.top(1)[0].date_posted;
 
     //Charts
-    var characteristicsChart = dc.lineChart("#characteristics-chart");
+    var qualityChart = dc.lineChart("#quality-chart");
     // var gradeLevelChart = dc.rowChart("#grade-chart");
     // var resourceTypeChart = dc.rowChart("#resource-chart");
     var techDebtChart = dc.pieChart("#tech-debt");
@@ -100,7 +101,7 @@ function makeGraphs(error, apiData) {
     //     .group(netTotalDonations)
     //     .formatNumber(d3.format(".3s"));
 
-    characteristicsChart
+    qualityChart
         //.width(600)
         .height(220)
         .margins({ top: 10, right: 50, bottom: 30, left: 50 })
@@ -151,6 +152,7 @@ function makeGraphs(error, apiData) {
         .transitionDuration(1000)
         .renderLabel(false)
         .renderTitle(false)
+        .ordinalColors(["#56B2EA", "#E064CD", "#F8B700", "#78CC00", "#7B71C5"])
         .dimension(projectRoot)
         .group(projectRootTqi);
 
@@ -185,7 +187,10 @@ function getJson(url, callback) {
 }
 
 function maxCharWeightIndex(dataPoint, characteristicIndex) {
-    return dataPoint.characteristics.characteristics[characteristicIndex].weights.reduce((iMax, x, i, arr) => x > arr[iMax] ? i : iMax, 0);
+    index = dataPoint.characteristics.characteristics[characteristicIndex].weights.reduce((iMax, x, i, arr) => x > arr[iMax] ? i : iMax, 0);
+    console.log("index:" + index);
+    return index;
+    // return dataPoint.characteristics.characteristics[characteristicIndex].weights.reduce((iMax, x, i, arr) => x > arr[iMax] ? i : iMax, 0);
 }
 
 function print_filter(filter) {
