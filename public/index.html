@@ -22,70 +22,54 @@
   <link rel="stylesheet" href="css/stylenew.css" />
 </head>
 
-<body>
+<body style="background-color:rgba(236, 236, 236, 0.753)">
+
   <div id="wrapper">
 
     <!-- Header -->
     <div id="header">
       <div class="container">
-        <!-- Logo -->
         <div id="logo">
           <h1><a href="#">QATCH ANALYSIS DASHBOARD</a></h1>
         </div>
-        <!-- Nav -->
       </div>
     </div>
     <!-- /Header -->
 
-    <div id="page" style="margin-top:-61px;">
+    <div id="page" style="margin-top: -61px;">
       <div class="container">
 
+        <!-- Top Row -->
         <div class="row">
-          <div class="2u chart-wrapper" id="menuselect" style="background-color: #33CC99; height: 60px;">
+          <div class="3u  chart-wrapper" id="projectselect"
+            style="background-color: rgba(124, 116, 192, 0.35); height: 60px;">
             <div class="chart-title"> <strong> Project </strong> </div>
           </div>
-          <div class="2u">
-            <div> <span> &nbsp</span></div>
-          </div>
-          <!-- <div class="2u chart-wrapper" id="total-projects">
-            <div class="chart-title"> <strong> Total Donation Count </strong> </div>
+
+          <!-- <div class="3u -1u chart-wrapper" id="qaselect"
+            style="background-color: rgba(124, 116, 192, 0.35); height: 60px;">
+            <div class="chart-title"> <strong> Quality Attribute </strong> </div>
           </div> -->
-          <!-- <div class="2u chart-wrapper" id="net-donations">
-            <div class="chart-title"> <strong> Net Donations ($) </strong> </div>
-          </div> -->
-          <div class="5u dc-data-count dc-chart" id="row-selection">
-            <span class="filter-count">_</span> selected out of <span class="total-count">_</span> analysis runs |
+
+          <div class="3u -5u dc-data-count dc-chart" id="row-selection" align="right">
+            <span class="filter-count">_</span> scans selected out of <span class="total-count">_</span>
             <span>
-              <a href='javascript:dc.filterAll();dc.redrawAll();'>
+              <br>
+              <a href='javascript:dc.filterAll();dc.redrawAll();' style="float:right">
                 <font color="#33CC99">Reset All</font>
               </a>
             </span>
           </div>
         </div>
+        <!-- /Top Row -->
 
+        <!-- Middle Row -->
         <div class="row">
-          <div class="6u chart-wrapper" id="quality-chart">
-            <div class="chart-title bold"> <strong> Quality </strong></div>
-          </div>
-          <!-- <div class="3u chart-wrapper" id="resource-chart">
-            <div class="chart-title"> <strong> Donation Count for Resources </strong> </div>
-          </div> -->
-          <div class="3u chart-wrapper" id="tech-debt">
-            <div class="chart-title"> <strong> Technical Debt Distribution </strong> </div>
-          </div>
-        </div>
 
-        <div class="row">
-          <!-- <div class="4u chart-wrapper" id="grade-chart">
-            <div class="chart-title"> <strong> Donation Count by Grade </strong> </div>
-          </div> -->
-          <!-- <div class="4u chart-wrapper" id="poverty-chart">
-            <div class="chart-title"> <strong> Donation Count by Poverty Level</strong></div>
-          </div> -->
-          <div class="4u chart-wrapper" id="threat-profile">
-            <div class="chart-title"> <strong> Security Threat Profile </strong> </div>
-          </div>
+
         </div>
+        <!-- /Middle Row -->
+
       </div>
     </div>
   </div>

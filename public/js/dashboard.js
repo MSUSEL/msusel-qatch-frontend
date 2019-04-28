@@ -23,7 +23,6 @@ function makeGraphs(error, apiData) {
 
     dataSet.forEach(function (d) {
         d.analysis_time = dateParse(d.analysis_time);
-        console.log(d);
         d.maxMaintainabilityInfluence = d.properties.properties[maxCharWeightIndex(d, 0)].name;
         d.maxReliabilityInfluence = d.properties.properties[maxCharWeightIndex(d, 1)].name;
         d.maxSecurityInfluence = d.properties.properties[maxCharWeightIndex(d, 2)].name;
@@ -38,20 +37,18 @@ function makeGraphs(error, apiData) {
     //Define Dimensions
     var timeScanned = ndx.dimension(function (d) { return d.analysis_time; });
     var projectRoot = ndx.dimension(function (d) { return d.path; });
+    var qualityAttributes = ndx.dimension(function (d) { return d.path; });
     var maintainability = ndx.dimension(function (d) { return d.maxMaintainabilityInfluence; });
     var reliability = ndx.dimension(function (d) { return d.maxReliabilityInfluence; });
     var security = ndx.dimension(function (d) { return d.maxSecurityInfluence; });
 
-    //Calculate metrics
+    //Calculate Groups
     var timeScannedGroup = timeScanned.group();
     var projectRootGroup = projectRoot.group();
     var maintainabilityGroup = maintainability.group();
     var reliabilityGroup = reliability.group();
     var securityGroup = security.group();
-
-    //Calculate Groups
     var netTotalScans = ndx.groupAll().reduceCount();
-
     var timeScannedTqi = timeScannedGroup.reduceSum(function (d) {
         return d.tqi_value;
     });
@@ -73,27 +70,32 @@ function makeGraphs(error, apiData) {
     var maxDate = timeScanned.top(1)[0].date_posted;
 
     //Charts
-    var qualityChart = dc.lineChart("#quality-chart");
+    // var qualityChart = dc.lineChart("#quality-chart");
     // var gradeLevelChart = dc.rowChart("#grade-chart");
     // var resourceTypeChart = dc.rowChart("#resource-chart");
-    var techDebtChart = dc.pieChart("#tech-debt");
+    // var techDebtChart = dc.pieChart("#tech-debt");
     // var povertyLevelChart = dc.rowChart("#poverty-chart");
-    var totalProjects = dc.numberDisplay("#total-projects");
+    // var totalProjects = dc.numberDisplay("#total-projects");
     // var netDonations = dc.numberDisplay("#net-donations");
-    var threatProfileChart = dc.barChart("#threat-profile");
+    // var threatProfileChart = dc.barChart("#threat-profile");
 
-    selectField = dc.selectMenu('#menuselect')
+    //Menus
+    projectSelect = dc.selectMenu('#projectselect')
         .dimension(projectRoot)
         .group(projectRootGroup);
+
+    // qualitySelect = dc.selectMenu('#qaselect')
+    //     .dimension(projectRoot)
+    //     .group(projectRootGroup);
 
     dc.dataCount("#row-selection")
         .crossfilter(ndx)
         .groupAll(all);
 
-    totalProjects
-        .formatNumber(d3.format("d"))
-        .valueAccessor(function (d) { return d; })
-        .group(all);
+    // totalProjects
+    //     .formatNumber(d3.format("d"))
+    //     .valueAccessor(function (d) { return d; })
+    //     .group(all);
 
     // netDonations
     //     .formatNumber(d3.format("d"))
@@ -101,25 +103,25 @@ function makeGraphs(error, apiData) {
     //     .group(netTotalDonations)
     //     .formatNumber(d3.format(".3s"));
 
-    qualityChart
-        //.width(600)
-        .height(220)
-        .margins({ top: 10, right: 50, bottom: 30, left: 50 })
-        .dimension(timeScanned)
-        .group(timeScannedTqi).valueAccessor(function (d) { return d.value })
-        // .stack()
-        .renderArea(true)
-        .transitionDuration(500)
-        .x(d3.scaleTime().domain([minDate, maxDate]))
-        .elasticX(true)
-        .elasticY(false)
-        .brushOn(true)
-        .legend(dc.legend().x(60).y(10).itemHeight(13).gap(5))
-        .renderHorizontalGridLines(true)
-        .renderVerticalGridLines(true)
-        .xAxisLabel("Time of Analysis")
-        .yAxisLabel("TQI")
-        .yAxis().ticks(6);
+    // qualityChart
+    //     //.width(600)
+    //     .height(220)
+    //     .margins({ top: 10, right: 50, bottom: 30, left: 50 })
+    //     .dimension(timeScanned)
+    //     .group(timeScannedTqi).valueAccessor(function (d) { return d.value })
+    //     // .stack()
+    //     .renderArea(true)
+    //     .transitionDuration(500)
+    //     .x(d3.scaleTime().domain([minDate, maxDate]))
+    //     .elasticX(true)
+    //     .elasticY(false)
+    //     .brushOn(true)
+    //     .legend(dc.legend().x(60).y(10).itemHeight(13).gap(5))
+    //     .renderHorizontalGridLines(true)
+    //     .renderVerticalGridLines(true)
+    //     .xAxisLabel("Time of Analysis")
+    //     .yAxisLabel("TQI")
+    //     .yAxis().ticks(6);
 
     // resourceTypeChart
     //     //.width(300)
@@ -143,35 +145,35 @@ function makeGraphs(error, apiData) {
     //     .group(projectsByGrade)
     //     .xAxis().ticks(4);
 
-    techDebtChart
-        .height(220)
-        //.width(350)
-        .legend(dc.legend().x(0).y(190).itemHeight(13).gap(5))
-        .radius(100)
-        .innerRadius(40)
-        .transitionDuration(1000)
-        .renderLabel(false)
-        .renderTitle(false)
-        .ordinalColors(["#56B2EA", "#E064CD", "#F8B700", "#78CC00", "#7B71C5"])
-        .dimension(projectRoot)
-        .group(projectRootTqi);
+    // techDebtChart
+    //     .height(220)
+    //     //.width(350)
+    //     .legend(dc.legend().x(0).y(190).itemHeight(13).gap(5))
+    //     .radius(100)
+    //     .innerRadius(40)
+    //     .transitionDuration(1000)
+    //     .renderLabel(false)
+    //     .renderTitle(false)
+    //     .ordinalColors(["#56B2EA", "#E064CD", "#F8B700", "#78CC00", "#7B71C5"])
+    //     .dimension(projectRoot)
+    //     .group(projectRootTqi);
 
-    threatProfileChart
-        //.width(800)
-        .height(220)
-        .transitionDuration(1000)
-        .dimension(projectRoot)
-        .group(securityGroupInfluences)
-        .margins({ top: 10, right: 50, bottom: 30, left: 50 })
-        .centerBar(false)
-        .gap(5)
-        .elasticY(true)
-        .x(d3.scaleBand().domain(projectRoot))
-        .xUnits(dc.units.ordinal)
-        .renderHorizontalGridLines(true)
-        .renderVerticalGridLines(true)
-        .ordering(function (d) { return d.value; })
-        .yAxis().tickFormat(d3.format("s"));
+    // threatProfileChart
+    //     //.width(800)
+    //     .height(220)
+    //     .transitionDuration(1000)
+    //     .dimension(projectRoot)
+    //     .group(securityGroupInfluences)
+    //     .margins({ top: 10, right: 50, bottom: 30, left: 50 })
+    //     .centerBar(false)
+    //     .gap(5)
+    //     .elasticY(true)
+    //     .x(d3.scaleBand().domain(projectRoot))
+    //     .xUnits(dc.units.ordinal)
+    //     .renderHorizontalGridLines(true)
+    //     .renderVerticalGridLines(true)
+    //     .ordering(function (d) { return d.value; })
+    //     .yAxis().tickFormat(d3.format("s"));
 
 
     dc.renderAll();
@@ -187,10 +189,7 @@ function getJson(url, callback) {
 }
 
 function maxCharWeightIndex(dataPoint, characteristicIndex) {
-    index = dataPoint.characteristics.characteristics[characteristicIndex].weights.reduce((iMax, x, i, arr) => x > arr[iMax] ? i : iMax, 0);
-    console.log("index:" + index);
-    return index;
-    // return dataPoint.characteristics.characteristics[characteristicIndex].weights.reduce((iMax, x, i, arr) => x > arr[iMax] ? i : iMax, 0);
+    return dataPoint.characteristics.characteristics[characteristicIndex].weights.reduce((iMax, x, i, arr) => x > arr[iMax] ? i : iMax, 0);
 }
 
 function print_filter(filter) {
