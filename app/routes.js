@@ -12,13 +12,9 @@ module.exports = function (app) {
         });
     });
 
-    app.get('dc.css', function (req, res) {
-        res.sendFile('node_modules/dc/dc.css', { root: __dirname });
-    });
-
-
     // frontend routes =========================================================
     app.get('/', function (req, res) {
-        res.sendFile('./public/index.html', { root: __dirname });
+        // res.sendFile('./static/index.html', { root: __dirname });
+        res.sendFile('index.html');
     });
 }

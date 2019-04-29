@@ -28,7 +28,7 @@ function makeGraphs(error, apiData) {
         d.maxSecurityInfluence = d.properties.properties[maxCharWeightIndex(d, 2)].name;
         d.tqi_value = d.tqi.eval;
     });
-    console.log(dataSet);
+    // console.log(dataSet);
 
     //Create a Crossfilter instance
     var ndx = crossfilter(dataSet);
@@ -59,10 +59,10 @@ function makeGraphs(error, apiData) {
     var reliabilityGroupInfluences = reliabilityGroup.reduceCount();
     var securityGroupInfluences = securityGroup.reduceCount();
 
-    print_filter(timeScannedTqi);
-    print_filter(projectRootTqi);
-    print_filter(maintainabilityInfluences);
-    print_filter(reliabilityGroupInfluences);
+    // print_filter(timeScannedTqi);
+    // print_filter(projectRootTqi);
+    // print_filter(maintainabilityInfluences);
+    // print_filter(reliabilityGroupInfluences);
     print_filter(securityGroupInfluences);
 
     //Define threshold values for data
@@ -82,7 +82,8 @@ function makeGraphs(error, apiData) {
     //Menus
     projectSelect = dc.selectMenu('#projectselect')
         .dimension(projectRoot)
-        .group(projectRootGroup);
+        .group(projectRootGroup)
+        .multiple(true);
 
     // qualitySelect = dc.selectMenu('#qaselect')
     //     .dimension(projectRoot)

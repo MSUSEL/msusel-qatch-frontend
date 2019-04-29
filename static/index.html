@@ -1,0 +1,100 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <title>Qatch</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,700|Merriweather:400,400italic,700italic"
+    rel="stylesheet" type="text/css">
+  <link rel="shortcut icon" href="#" />
+
+  <link rel="stylesheet" href="./lib/css/bootstrap.min.css">
+  <link rel="stylesheet" href="./lib/css/keen-dashboards.css">
+  <link rel="stylesheet" href="./lib/css/dc.css">
+  <link rel="stylesheet" href="./lib/css/icons.css">
+  <link rel="stylesheet" href="./css/style.css">
+  <link rel="stylesheet" href="./css/custom.css">
+</head>
+
+<body id="home">
+  <div id="wrap">
+
+    <section id="hero" class="light-typo">
+      <div id="cover-image"></div>
+      <div class="container welcome-content">
+        <div class="middle-text">
+          <h1>Qatch Analysis Dashboard</h1>
+        </div>
+      </div>
+    </section>
+
+    <div class="container content">
+      <div class="row">
+        <div class=container-fluid>
+
+          <!-- Top Row -->
+          <div class="row">
+
+            <div class="col-sm-4">
+              <div class="chart-wrapper">
+                <div class="chart-title">
+                  Select Project(s)
+                </div>
+                <div class="chart-stage">
+                  <div id="projectselect"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-sm-4">
+              <div class="chart-wrapper">
+                <div class="chart-title">
+                  Select Project(s)
+                </div>
+                <div class="chart-stage">
+                  (todo) Placeholder
+                  <!-- <div id="projectselect"></div> -->
+                </div>
+              </div>
+            </div>
+
+            <div class="col-sm-4">
+              <div class="chart-wrapper">
+                <div class="chart-title">
+                  Projects Selected
+                </div>
+                <div class="chart-stage">
+                  <div class="dc_chart" id="row-selection">
+                    <span class="filter-count">_</span> selected out of <span class="total-count">_</span> analysis runs
+                    |
+                    <a href='javascript:dc.filterAll();dc.redrawAll();'>
+                      <font color="#33CC99">Reset All</font>
+                    </a>
+                  </div>
+                  <span>
+
+                  </span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <!-- /Top Row -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="bundle.js"></script>
+  <!-- <script type="text/javascript" src="./lib/js/jquery.min.js"></script>
+  <script type="text/javascript" src="./lib/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="./lib/js/crossfilter.js"></script>
+  <script type="text/javascript" src="./lib/js/d3.js"></script>
+  <script type="text/javascript" src="./lib/js/dc.js"></script>
+  <script type="text/javascript" src="./lib/js/queue.js"></script>
+  <script type="text/javascript" src="./lib/js/keen.min.js"></script>
+  <script type="text/javascript" src="./js/dashboard.js"></script> -->
+</body>
+
+</html>
