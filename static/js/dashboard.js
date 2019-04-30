@@ -108,8 +108,6 @@ function makeGraphs(error, apiData) {
         .crossfilter(ndx)
         .groupAll(all);
 
-    
-
     // qualitySelect = dc.selectMenu('#qaselect')
     //     .dimension(projectRoot)
     //     .group(projectRootGroup);

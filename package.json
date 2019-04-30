@@ -17,8 +17,8 @@
     "d3-queue": "~3.0.7",
     "dc": "~3.0.12",
     "express": "~4.16.4",
-    "jquery": "~2.1.4",
-    "keen-js": "~3.5.0",
+    "jquery": "~3.4.0",
+    "keen-js": "~6.0.1",
     "method-override": "~3.0.0",
     "mongoose": "~5.5.4",
     "requirejs": "^2.3.6"
