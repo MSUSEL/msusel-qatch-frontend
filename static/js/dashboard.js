@@ -69,7 +69,9 @@ function makeGraphs(error, apiData) {
     var minDate = timeScanned.bottom(1)[0].date_posted;
     var maxDate = timeScanned.top(1)[0].date_posted;
 
-    //Charts
+    // Widgets
+    var projectSelect = dc.selectMenu('#projectselect');
+    var qualityChart = dc.lineChart("#quality-chart");
     // var qualityChart = dc.lineChart("#quality-chart");
     // var gradeLevelChart = dc.rowChart("#grade-chart");
     // var resourceTypeChart = dc.rowChart("#resource-chart");
@@ -79,19 +81,39 @@ function makeGraphs(error, apiData) {
     // var netDonations = dc.numberDisplay("#net-donations");
     // var threatProfileChart = dc.barChart("#threat-profile");
 
-    //Menus
-    projectSelect = dc.selectMenu('#projectselect')
+    projectSelect
         .dimension(projectRoot)
         .group(projectRootGroup)
         .multiple(true);
+
+    qualityChart
+        .renderArea(true)
+        .width(800)
+        .height(200)
+        .brushOn(true)
+        .dimension(timeScanned)
+        .group(timeScannedTqi).valueAccessor(function (d) { return d.value })
+        .transitionDuration(500)
+        .x(d3.scaleTime().domain([minDate, maxDate]))
+        .elasticX(true)
+        .elasticY(false)
+        .legend(dc.legend().x(60).y(10).itemHeight(13).gap(5))
+        .renderHorizontalGridLines(true)
+        .renderVerticalGridLines(true)
+        .xAxisLabel("Time of Analysis")
+        .yAxisLabel("TQI")
+        .yAxis().ticks(6);
+
+    dc.dataCount("#row-selection")
+        .crossfilter(ndx)
+        .groupAll(all);
+
+    
 
     // qualitySelect = dc.selectMenu('#qaselect')
     //     .dimension(projectRoot)
     //     .group(projectRootGroup);
 
-    dc.dataCount("#row-selection")
-        .crossfilter(ndx)
-        .groupAll(all);
 
     // totalProjects
     //     .formatNumber(d3.format("d"))

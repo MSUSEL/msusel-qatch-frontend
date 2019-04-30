@@ -62,25 +62,34 @@
             <div class="col-sm-4">
               <div class="chart-wrapper">
                 <div class="chart-title">
-                  Projects Selected
+                  Analysis Runs Selected
                 </div>
                 <div class="chart-stage">
                   <div class="dc_chart" id="row-selection">
-                    <span class="filter-count">_</span> selected out of <span class="total-count">_</span> analysis runs
+                    <span class="filter-count">_</span> of <span class="total-count">_</span>
                     |
-                    <a href='javascript:dc.filterAll();dc.redrawAll();'>
-                      <font color="#33CC99">Reset All</font>
-                    </a>
+                    <a href='javascript:dc.filterAll();dc.redrawAll();'>Reset All</a>
                   </div>
-                  <span>
-
-                  </span>
                 </div>
               </div>
             </div>
 
           </div>
           <!-- /Top Row -->
+
+          <!-- Middle Row -->
+          <div class="col-sm-12">
+            <div class="chart-wrapper">
+              <div class="chart-title">
+                Quality History    
+              </div>
+              <div class="chart-stage">
+                <div id="quality-chart"></div>
+              </div>
+            </div>
+          </div>
+          <!-- /Middle Row -->
+
         </div>
       </div>
     </div>
