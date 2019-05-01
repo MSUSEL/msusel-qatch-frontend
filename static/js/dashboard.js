@@ -28,7 +28,7 @@ function makeGraphs(error, apiData) {
         d.maxSecurityInfluence = d.properties.properties[maxCharWeightIndex(d, 2)].name;
         d.tqi_value = d.tqi.eval;
     });
-    // console.log(dataSet);
+    console.log(dataSet[0]);
 
     //Create a Crossfilter instance
     var ndx = crossfilter(dataSet);
@@ -37,17 +37,21 @@ function makeGraphs(error, apiData) {
     //Define Dimensions
     var timeScanned = ndx.dimension(function (d) { return d.analysis_time; });
     var projectRoot = ndx.dimension(function (d) { return d.path; });
-    var qualityAttributes = ndx.dimension(function (d) { return d.path; });
-    var maintainability = ndx.dimension(function (d) { return d.maxMaintainabilityInfluence; });
+    var maintainabilityQI = ndx.dimension(function (d) { return d.characteristics.characteristics[0].eval; });
+    var reliabilityQI = ndx.dimension(function (d) { return d.characteristics.characteristics[1].eval; });
+    var securityQI = ndx.dimension(function (d) { return d.characteristics.characteristics[2].eval; });
+    var maintainabilityMaxInf = ndx.dimension(function (d) { return d.maxMaintainabilityInfluence; });
     var reliability = ndx.dimension(function (d) { return d.maxReliabilityInfluence; });
     var security = ndx.dimension(function (d) { return d.maxSecurityInfluence; });
 
-    //Calculate Groups
+    // Groups
     var timeScannedGroup = timeScanned.group();
     var projectRootGroup = projectRoot.group();
-    var maintainabilityGroup = maintainability.group();
+    var maintainabilityMaxInfGroup = maintainabilityMaxInf.group();
     var reliabilityGroup = reliability.group();
     var securityGroup = security.group();
+
+    // Map-reduces
     var netTotalScans = ndx.groupAll().reduceCount();
     var timeScannedTqi = timeScannedGroup.reduceSum(function (d) {
         return d.tqi_value;
@@ -55,14 +59,14 @@ function makeGraphs(error, apiData) {
     var projectRootTqi = projectRootGroup.reduceSum(function (d) {
         return d.tqi_value;
     });
-    var maintainabilityInfluences = maintainabilityGroup.reduceCount();
+    var maintainabilityInfluences = maintainabilityMaxInfGroup.reduceCount();
     var reliabilityGroupInfluences = reliabilityGroup.reduceCount();
     var securityGroupInfluences = securityGroup.reduceCount();
 
-    // print_filter(timeScannedTqi);
-    // print_filter(projectRootTqi);
-    // print_filter(maintainabilityInfluences);
-    // print_filter(reliabilityGroupInfluences);
+    print_filter(timeScannedTqi);
+    print_filter(projectRootTqi);
+    print_filter(maintainabilityInfluences);
+    print_filter(reliabilityGroupInfluences);
     print_filter(securityGroupInfluences);
 
     //Define threshold values for data
@@ -71,7 +75,10 @@ function makeGraphs(error, apiData) {
 
     // Widgets
     var projectSelect = dc.selectMenu('#projectselect');
+    var qualityGate = dc.pieChart("#quality-gate");
     var qualityChart = dc.lineChart("#quality-chart");
+    var iso25kChart = dc.barChart("#iso-25k-chart");
+    var securityAspectsChart = dc.barChart("#security-chart");
     // var qualityChart = dc.lineChart("#quality-chart");
     // var gradeLevelChart = dc.rowChart("#grade-chart");
     // var resourceTypeChart = dc.rowChart("#resource-chart");
@@ -81,29 +88,64 @@ function makeGraphs(error, apiData) {
     // var netDonations = dc.numberDisplay("#net-donations");
     // var threatProfileChart = dc.barChart("#threat-profile");
 
+    qualityGate
+        .dimension(projectRoot)
+        .group(projectRootGroup)
+        .minAngleForLabel(360);
+
+    iso25kChart
+        .centerBar(false)
+        .dimension(projectRoot)
+        .elasticY(true)
+        .gap(5)
+        .group(securityGroupInfluences)
+        .margins({ top: 10, right: 50, bottom: 30, left: 50 })
+        .ordering(function (d) { return d.value; })
+        .renderHorizontalGridLines(true)
+        .renderVerticalGridLines(true)
+        .transitionDuration(1000)
+        .x(d3.scaleBand().domain(projectRoot))
+        .xUnits(dc.units.ordinal);
+        // .yAxis().tickFormat(d3.format("s"));
+
+
+    securityAspectsChart
+        // .centerBar(false)
+        .dimension(projectRoot)
+        .elasticY(true)
+        // .gap(5)
+        .group(securityGroupInfluences)
+        // .margins({ top: 10, right: 50, bottom: 30, left: 50 })
+        // .ordering(function (d) { return d.value; })
+        // .renderHorizontalGridLines(true)
+        // .renderVerticalGridLines(true)
+        .transitionDuration(1000)
+        .x(d3.scaleBand().domain(projectRoot))
+        .xUnits(dc.units.ordinal);
+        // .yAxis().tickFormat(d3.format("s"));
+
     projectSelect
         .dimension(projectRoot)
         .group(projectRootGroup)
         .multiple(true);
 
     qualityChart
-        .renderArea(true)
-        .width(800)
-        .height(200)
         .brushOn(true)
+        .curve(d3.curveStepAfter)
         .dimension(timeScanned)
-        .group(timeScannedTqi).valueAccessor(function (d) { return d.value })
-        .transitionDuration(500)
-        .x(d3.scaleTime().domain([minDate, maxDate]))
         .elasticX(true)
         .elasticY(false)
-        .legend(dc.legend().x(60).y(10).itemHeight(13).gap(5))
+        .group(timeScannedTqi).valueAccessor(function (d) { return d.value })
+        // .legend(dc.legend().x(60).y(10).itemHeight(13).gap(5))
+        .renderArea(true)
         .renderHorizontalGridLines(true)
         .renderVerticalGridLines(true)
+        .transitionDuration(500)
+        .x(d3.scaleTime().domain([minDate, maxDate]))
         .xAxisLabel("Time of Analysis")
         .yAxisLabel("TQI")
         .yAxis().ticks(6);
-
+        
     dc.dataCount("#row-selection")
         .crossfilter(ndx)
         .groupAll(all);

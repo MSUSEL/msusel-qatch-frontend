@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "up": "start watchify static/js/dashboard.js -o static/bundle.js && start npm start",
+    "up": "watchify static/js/dashboard.js -o static/bundle.js & npm start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
