@@ -23,9 +23,8 @@ function makeGraphs(error, apiData) {
 
     dataSet.forEach(function (d) {
         d.analysis_time = dateParse(d.analysis_time);
-        d.maxMaintainabilityInfluence = d.properties.properties[maxCharWeightIndex(d, 0)].name;
-        d.maxReliabilityInfluence = d.properties.properties[maxCharWeightIndex(d, 1)].name;
-        d.maxSecurityInfluence = d.properties.properties[maxCharWeightIndex(d, 2)].name;
+        d.maxTqiInfluence = d.characteristics.characteristics[maxCharWeightIndex(d)].name;
+        d.maxSecurityInfluence = d.properties.properties[maxPropWeightIndex(d, 2)].name;
         d.tqi_value = d.tqi.eval;
     });
     console.log(dataSet[0]);
@@ -36,38 +35,50 @@ function makeGraphs(error, apiData) {
 
     //Define Dimensions
     var timeScanned = ndx.dimension(function (d) { return d.analysis_time; });
+    var tqiMaxInfluence = ndx.dimension(function (d) { return d.maxTqiInfluence; });
+    var securityMaxInfluence = ndx.dimension(function (d) { return d.maxSecurityInfluence; });
     var projectRoot = ndx.dimension(function (d) { return d.path; });
-    var maintainabilityQI = ndx.dimension(function (d) { return d.characteristics.characteristics[0].eval; });
-    var reliabilityQI = ndx.dimension(function (d) { return d.characteristics.characteristics[1].eval; });
-    var securityQI = ndx.dimension(function (d) { return d.characteristics.characteristics[2].eval; });
-    var maintainabilityMaxInf = ndx.dimension(function (d) { return d.maxMaintainabilityInfluence; });
-    var reliability = ndx.dimension(function (d) { return d.maxReliabilityInfluence; });
-    var security = ndx.dimension(function (d) { return d.maxSecurityInfluence; });
 
     // Groups
-    var timeScannedGroup = timeScanned.group();
     var projectRootGroup = projectRoot.group();
-    var maintainabilityMaxInfGroup = maintainabilityMaxInf.group();
-    var reliabilityGroup = reliability.group();
-    var securityGroup = security.group();
+    var timeScannedGroup = timeScanned.group();
+    var tqiCharacteristicGroup = tqiMaxInfluence.group();
+    var securityCharacteristicGroup = securityMaxInfluence.group();
 
     // Map-reduces
-    var netTotalScans = ndx.groupAll().reduceCount();
+    var tqiCharacteristicReduce = tqiCharacteristicGroup.reduce(
+        function(p, v) {
+            p += v.characteristics.characteristics[0].eval;
+            return p;
+        },
+        function(p, v) {
+            p -= v.characteristics.characteristics[0].eval;
+            return p;
+        },
+        function() { 
+            return 0.0
+        }
+    );
+
+    var securityCharacteristicReduce = securityCharacteristicGroup.reduce(
+        function(p, v) {
+            p += v.characteristics.characteristics[2].eval;
+            return p;
+        },
+        function(p, v) {
+            p -= v.characteristics.characteristics[2].eval;
+            return p;
+        },
+        function() { 
+            return 0.0
+        }
+    );
+
     var timeScannedTqi = timeScannedGroup.reduceSum(function (d) {
         return d.tqi_value;
     });
-    var projectRootTqi = projectRootGroup.reduceSum(function (d) {
-        return d.tqi_value;
-    });
-    var maintainabilityInfluences = maintainabilityMaxInfGroup.reduceCount();
-    var reliabilityGroupInfluences = reliabilityGroup.reduceCount();
-    var securityGroupInfluences = securityGroup.reduceCount();
 
-    print_filter(timeScannedTqi);
-    print_filter(projectRootTqi);
-    print_filter(maintainabilityInfluences);
-    print_filter(reliabilityGroupInfluences);
-    print_filter(securityGroupInfluences);
+    print_filter(tqiCharacteristicReduce);
 
     //Define threshold values for data
     var minDate = timeScanned.bottom(1)[0].date_posted;
@@ -95,10 +106,10 @@ function makeGraphs(error, apiData) {
 
     iso25kChart
         .centerBar(false)
-        .dimension(projectRoot)
+        .dimension(tqiMaxInfluence)
         .elasticY(true)
         .gap(5)
-        .group(securityGroupInfluences)
+        .group(tqiCharacteristicGroup)
         .margins({ top: 10, right: 50, bottom: 30, left: 50 })
         .ordering(function (d) { return d.value; })
         .renderHorizontalGridLines(true)
@@ -106,23 +117,21 @@ function makeGraphs(error, apiData) {
         .transitionDuration(1000)
         .x(d3.scaleBand().domain(projectRoot))
         .xUnits(dc.units.ordinal);
-        // .yAxis().tickFormat(d3.format("s"));
 
 
     securityAspectsChart
-        // .centerBar(false)
-        .dimension(projectRoot)
+        .centerBar(false)
+        .dimension(securityMaxInfluence)
         .elasticY(true)
-        // .gap(5)
-        .group(securityGroupInfluences)
-        // .margins({ top: 10, right: 50, bottom: 30, left: 50 })
-        // .ordering(function (d) { return d.value; })
-        // .renderHorizontalGridLines(true)
-        // .renderVerticalGridLines(true)
+        .gap(5)
+        .group(securityCharacteristicGroup)
+        .margins({ top: 10, right: 50, bottom: 30, left: 50 })
+        .ordering(function (d) { return d.value; })
+        .renderHorizontalGridLines(true)
+        .renderVerticalGridLines(true)
         .transitionDuration(1000)
         .x(d3.scaleBand().domain(projectRoot))
         .xUnits(dc.units.ordinal);
-        // .yAxis().tickFormat(d3.format("s"));
 
     projectSelect
         .dimension(projectRoot)
@@ -251,7 +260,11 @@ function getJson(url, callback) {
     });
 }
 
-function maxCharWeightIndex(dataPoint, characteristicIndex) {
+function maxCharWeightIndex(dataPoint) {
+    return dataPoint.tqi.weights.reduce((iMax, x, i, arr) => x > arr[iMax] ? i : iMax, 0);
+}
+
+function maxPropWeightIndex(dataPoint, characteristicIndex) {
     return dataPoint.characteristics.characteristics[characteristicIndex].weights.reduce((iMax, x, i, arr) => x > arr[iMax] ? i : iMax, 0);
 }
 
